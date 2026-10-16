@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Attune</title>
+<style>
+:root{--bg:#f4f7f9;--fg:#14213d;--mut:#425066;--card:#fff;--line:#b9c4d0;--ac:#0b6e69;--acfg:#fff;--bad:#a61b1b;--ok:#17653a;--warn:#7a4e00;--fs:100;--tap:32px;--fw:2px;--ls:0em}
+@media(prefers-color-scheme:dark){:root:not([data-th]){--bg:#0f1722;--fg:#e8eef6;--mut:#b2bdcb;--card:#182233;--line:#3d4d63;--ac:#5fd0c8;--acfg:#06201e;--bad:#ff9a9a;--ok:#7fe0a6;--warn:#ffd27a}}
+:root[data-th=dark]{--bg:#0f1722;--fg:#e8eef6;--mut:#b2bdcb;--card:#182233;--line:#3d4d63;--ac:#5fd0c8;--acfg:#06201e;--bad:#ff9a9a;--ok:#7fe0a6;--warn:#ffd27a}
+:root[data-th=hc]{--bg:#000;--fg:#fff;--mut:#fff;--card:#000;--line:#fff;--ac:#ffee00;--acfg:#000;--bad:#ff8a8a;--ok:#86ffb0;--warn:#ffd27a}
+[hidden]{display:none!important}
+html{font-size:calc(var(--fs)*1%)}
+body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.6 "Atkinson Hyperlegible",Verdana,system-ui,sans-serif;letter-spacing:var(--ls)}
+h1{font-size:1.6rem;margin:.2rem 0}h2{font-size:1.3rem;margin-top:0}h3{font-size:1.05rem}
+.mut{color:var(--mut)}
+header{padding:1rem 1rem 0;max-width:74rem;margin:auto}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chips span{border:1.5px solid var(--line);border-radius:4px;padding:.1rem .6rem;background:var(--card)}
+.wrap{display:grid;grid-template-columns:12rem 1fr;gap:1rem;max-width:74rem;margin:auto;padding:1rem}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}#tl{display:flex;overflow-x:auto}}
+button,.xbtn,select,input,textarea{font:inherit;color:inherit}
+button,.xbtn{min-height:var(--tap);min-width:var(--tap);padding:.2rem .9rem;border:1.5px solid var(--fg);background:var(--card);border-radius:6px;cursor:pointer;margin:.15rem}
+button.p{background:var(--ac);color:var(--acfg);border-color:var(--ac)}
+[role=tab]{display:block;width:100%;text-align:left;border-radius:0;border-width:0 0 0 4px;border-left-style:solid;border-color:var(--line);background:transparent}
+[role=tab][aria-selected=true]{border-color:var(--ac);font-weight:700;background:var(--card)}
+input,select,textarea{padding:.35rem;border:1.5px solid var(--line);border-radius:4px;background:var(--card);max-width:100%}
+input:not([type=checkbox]):not([type=radio]),select{min-height:var(--tap)}
+textarea{width:100%;box-sizing:border-box;font-family:ui-monospace,Consolas,monospace;font-size:.9rem}
+:focus-visible{outline:var(--fw) solid var(--ac);outline-offset:2px;box-shadow:0 0 0 calc(var(--fw) + 2px) var(--bg)}
+section[role=tabpanel]{background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:1rem 1.2rem}
+.zone{border:2px dashed var(--line);border-radius:8px;padding:1rem;margin:.6rem 0}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.5rem 0}
+.sq{min-width:0;min-height:0;width:calc(var(--tap)*.55);height:calc(var(--tap)*.55);padding:0;margin:.5rem}
+.sq[aria-pressed=true]{background:var(--ac)}
+#log{padding-left:1.2rem}#log li:first-child{animation:fl 1.2s}
+@keyframes fl{from{background:var(--ac);color:var(--acfg)}}
+.calm *{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.skip{position:absolute;left:-99rem}.skip:focus{left:1rem;top:1rem;background:var(--card);padding:.5rem;z-index:9}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+table{border-collapse:collapse;width:100%;margin:.5rem 0}th,td{border:1px solid var(--line);padding:.3rem .5rem;text-align:left}
+.bad{border-color:var(--bad)!important}.err{color:var(--bad);display:block}
+.xbtn{display:inline-block;width:2.2rem;min-height:0;min-width:0;height:1.1rem;padding:0;font-size:.6rem;line-height:1.1rem;text-align:center}
+#fa input{display:block;margin:.3rem 0;width:12rem}
+#fb label{display:block;margin:.5rem 0 .1rem;font-weight:700}#fb input{width:14rem;max-width:100%}
+pre{background:var(--bg);border:1px solid var(--line);padding:.4rem;overflow-x:auto;white-space:pre-wrap;margin:.2rem 0}
+#iss li{margin:.8rem 0;list-style:none}#iss{padding:0}
+.bar{height:1.4rem;background:var(--ac);color:var(--acfg);padding:0 .4rem;margin:.2rem 0;white-space:nowrap}
+.pass{border-color:var(--ok)!important;color:var(--ok)}.part{border-color:var(--warn)!important;color:var(--warn)}.fail{border-color:var(--bad)!important;color:var(--bad)}
+#ruler{position:fixed;left:0;right:0;height:28px;background:rgba(255,220,0,.28);border-block:2px solid rgba(255,160,0,.7);pointer-events:none;z-index:5}
+.fm p:not(:hover):not(:focus){opacity:.3}
+.read p{max-width:62ch}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+<h1>Attune</h1>
+<p class="mut">An interface that adapts to how you use it, audits any HTML, and measures whether accessibility fixes help.</p>
+<div class="chips"><span id="cur"></span><span>Last change: <b id="last">none yet</b></span><span>Input detected: <b id="mode">none</b></span></div>
+</header>
+<div class="wrap">
+<div role="tablist" aria-label="Lab sections" aria-orientation="vertical" id="tl">
+<button role="tab" id="t0" aria-controls="p0">Adaptive engine</button>
+<button role="tab" id="t1" aria-controls="p1">Before and after</button>
+<button role="tab" id="t2" aria-controls="p2">HTML auditor</button>
+<button role="tab" id="t3" aria-controls="p3">Cognitive support</button>
+<button role="tab" id="t4" aria-controls="p4">Modality matrix</button>
+</div>
+<main id="main">
+
+<section role="tabpanel" id="p0" aria-labelledby="t0">
+<h2>Adaptive engine</h2>
+<p>Use the page as you normally would. The lab watches input signals, changes its own settings, and records why.</p>
+<div class="row">
+<label><input type="checkbox" id="auto" checked> Adapt automatically</label>
+<label>Theme <select id="theme"><option value="auto">System</option><option value="light">Light</option><option value="dark">Dark</option><option value="hc">High contrast</option></select></label>
+<button id="fm">Text smaller</button><button id="fp">Text larger</button>
+<button id="rst">Reset to defaults</button>
+</div>
+<div class="row"><button id="voice">Start voice commands</button><span id="vs" role="status"></span></div>
+<p class="mut">Voice commands: "bigger text", "smaller text", "dark mode", "light mode", "high contrast", "calm".</p>
+<div id="adaptzone" class="zone">
+<p>Practice area: press the small squares. Clicks that miss a square count as missed clicks.</p>
+<div id="grid"></div>
+</div>
+<p>Missed clicks in the last 10 seconds: <b id="miss">0</b>. Pointer direction reversals: <b id="jit">0</b>. Pointer position: <span id="trk">none</span>.</p>
+<h3>Why did it change?</h3>
+<ul id="log"><li class="none">No changes yet.</li></ul>
+</section>
+
+<section role="tabpanel" id="p1" aria-labelledby="t1" hidden>
+<h2>Before and after</h2>
+<p>Task: enter the name Sam Lee, the email sam@mail.com and any date, then send. Use mouse, touch or keyboard only. Timing starts at your first action in the form.</p>
+<fieldset><legend>Version to test</legend>
+<label><input type="radio" name="ver" value="A" checked> A: original</label>
+<label><input type="radio" name="ver" value="B"> B: fixed</label></fieldset>
+<div id="exform" class="zone"></div>
+<div class="row"><button id="giveup">I can't finish</button><button id="exclr">Clear results</button><button id="exdl">Download results (JSON)</button></div>
+<div id="exstat" role="status"></div>
+<table><caption class="sr">Results</caption><thead><tr><th scope="col">Version</th><th scope="col">Input</th><th scope="col">Time (s)</th><th scope="col">Tab presses</th><th scope="col">Missed clicks</th><th scope="col">Errors</th><th scope="col">Finished</th></tr></thead><tbody id="rb"></tbody></table>
+<h3>Average time to finish</h3><div id="bars">No finished runs yet.</div>
+</section>
+
+<section role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+<h2>HTML auditor</h2>
+<p>Paste any HTML fragment. It is parsed in a detached document and never run.</p>
+<label for="src">HTML to audit</label>
+<textarea id="src" rows="8">&lt;h1&gt;Cafe&lt;/h1&gt;
+&lt;h3&gt;Menu&lt;/h3&gt;
+&lt;img src="latte.jpg"&gt;
+&lt;div onclick="order()" style="color:#999;background:#fff"&gt;Order now&lt;/div&gt;
+&lt;input placeholder="Email"&gt;
+&lt;a href="#"&gt;&lt;/a&gt;
+&lt;button tabindex="5"&gt;Buy&lt;/button&gt;</textarea>
+<div class="row"><button class="p" id="run">Run audit</button><button id="fixall">Apply all fixes</button><span id="sum" role="status"></span></div>
+<ul id="iss"></ul>
+</section>
+
+<section role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+<h2>Cognitive support</h2>
+<label for="txt">Text to check</label>
+<textarea id="txt" rows="5">Accessibility means that everyone can use a product. It does not depend on one kind of ability. Good design reduces effort for people who are tired, distracted, or still learning the language.
+
+Short sentences help. Clear headings help. Predictable layouts help. Long, winding paragraphs that bury the main point inside several clauses, and that expect the reader to hold every idea in memory until the sentence finally ends, do not.</textarea>
+<div class="row">
+<button class="p" id="rd">Check readability</button>
+<button id="rl" aria-pressed="false">Reading ruler: off</button>
+<button id="fmode" aria-pressed="false">Focus mode: off</button>
+<button id="sp" aria-pressed="false">Wider spacing: off</button>
+</div>
+<p id="rres" role="status"></p>
+<div id="prev" class="read"></div>
+<h3>Distraction score</h3>
+<p>Scores the HTML in the auditor tab for autoplay, animation, flashing and moving content.</p>
+<button id="ds">Score the auditor HTML</button>
+<p id="dres" role="status"></p>
+</section>
+
+<section role="tabpanel" id="p4" aria-labelledby="t4" hidden>
+<h2>Modality matrix</h2>
+<p>Test each component with each input method, then press a cell to cycle Untested, Pass, Partial and Fail. Columns marked "seen" were detected in this session.</p>
+<div style="overflow-x:auto"><table id="mx"></table></div>
+<p id="mxs" role="status"></p>
+</section>
+
+</main>
+</div>
+<div id="live" class="sr" aria-live="polite"></div>
+<div id="ruler" hidden></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const DEF={fs:100,tap:32,fw:2,ls:0,th:'auto',calm:0};
+let D={...DEF},auto=true,ruler=false;const seen=new Set();
+
+/* ---------- core: settings, log ---------- */
+function apply(){
+ const r=document.documentElement,s=r.style;
+ s.setProperty('--fs',D.fs);s.setProperty('--tap',D.tap+'px');s.setProperty('--fw',D.fw+'px');s.setProperty('--ls',D.ls+'em');
+ D.th==='auto'?r.removeAttribute('data-th'):r.dataset.th=D.th;
+ document.body.classList.toggle('calm',!!D.calm);
+ $('#theme').value=D.th;
+ $('#cur').textContent=`Text ${D.fs}%, targets ${D.tap}px, focus ring ${D.fw}px`;
+}
+function log(reason,change){
+ $('#log .none')?.remove();
+ const li=document.createElement('li');
+ li.textContent=`${new Date().toLocaleTimeString()}: ${reason}. Change: ${change}.`;
+ $('#log').prepend(li);$('#last').textContent=change;$('#live').textContent=`${change}. Reason: ${reason}.`;
+}
+function set(k,v,reason,msg,force){
+ if((!auto&&!force)||D[k]===v)return;
+ D[k]=v;apply();log(reason,msg);
+}
+function mod(m){if(!seen.has(m)){seen.add(m);markMatrix()}$('#mode').textContent=m}
+$('#auto').onchange=e=>{auto=e.target.checked;log('You switched automatic adaptation '+(auto?'on':'off'),'no setting changed')};
+$('#theme').onchange=e=>set('th',e.target.value,'You chose a theme','theme '+e.target.selectedOptions[0].text,true);
+$('#fp').onclick=()=>set('fs',Math.min(200,D.fs+10),'You pressed larger text','text '+Math.min(200,D.fs+10)+'%',true);
+$('#fm').onclick=()=>set('fs',Math.max(80,D.fs-10),'You pressed smaller text','text '+Math.max(80,D.fs-10)+'%',true);
+$('#rst').onclick=()=>{D={...DEF};apply();log('You pressed reset','all settings back to defaults')};
+
+/* ---------- adaptive engine: signals ---------- */
+let misses=[],pts=[];
+$('#grid').innerHTML=Array.from({length:12},(_,i)=>`<button class="sq" aria-pressed="false" aria-label="Square ${i+1}"></button>`).join('');
+$$('.sq').forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true'));
+const CTRL='button,a,input,select,textarea,label,summary,[tabindex],[role=button],[role=tab],.xbtn';
+addEventListener('pointerdown',e=>{
+ const t=e.pointerType==='touch'?'touch':'mouse';mod(t);
+ if(t==='touch')set('tap',48,'Touch input detected','targets 48px');
+ if(e.target.closest('#adaptzone')&&!e.target.closest(CTRL)){
+  const n=Date.now();misses.push(n);misses=misses.filter(x=>n-x<10000);$('#miss').textContent=misses.length;
+  if(misses.length>=3)set('tap',44,misses.length+' missed clicks in 10 seconds','targets 44px');
+ }
+});
+addEventListener('pointermove',e=>{
+ if(e.pointerType==='mouse')mod('mouse');
+ $('#trk').textContent=`x ${e.clientX}, y ${e.clientY}`;
+ if(ruler)$('#ruler').style.top=(e.clientY-14)+'px';
+ const n=performance.now();pts.push([e.clientX,n]);pts=pts.filter(p=>n-p[1]<1500);
+ if(pts.length>8){let rev=0;for(let i=2;i<pts.length;i++){const a=pts[i-1][0]-pts[i-2][0],b=pts[i][0]-pts[i-1][0];if(a*b<0&&Math.abs(a)+Math.abs(b)>6)rev++}
+  $('#jit').textContent=rev;
+  if(rev>=10)set('tap',48,'Erratic pointer: '+rev+' direction reversals in 1.5 seconds','targets 48px');}
+});
+addEventListener('keydown',e=>{
+ if(e.key==='Tab'){mod('keyboard');set('fw',4,'Keyboard navigation detected','focus ring 4px')}
+});
+const mq=q=>matchMedia(q).matches;
+if(mq('(prefers-reduced-motion:reduce)'))set('calm',1,'Your system asks for reduced motion','calm mode on');
+if(mq('(prefers-contrast:more)'))set('th','hc','Your system asks for more contrast','high-contrast theme');
+else if(mq('(prefers-color-scheme:dark)'))log('Your system uses a dark colour scheme','dark theme applied by the browser');
+apply();
+
+/* voice */
+$('#voice').onclick=()=>{
+ const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!R){$('#vs').textContent='Voice input is not supported in this browser.';return}
+ const r=new R();r.continuous=true;r.lang='en-US';
+ r.onstart=()=>$('#vs').textContent='Listening.';
+ r.onerror=e=>$('#vs').textContent='Voice error: '+e.error;
+ r.onend=()=>$('#vs').textContent='Voice stopped.';
+ r.onresult=e=>{
+  const t=e.results[e.results.length-1][0].transcript.toLowerCase();mod('voice');
+  const w='You said "'+t.trim()+'"';
+  if(t.includes('bigger'))set('fs',Math.min(200,D.fs+10),w,'text larger',true);
+  else if(t.includes('smaller'))set('fs',Math.max(80,D.fs-10),w,'text smaller',true);
+  else if(t.includes('dark'))set('th','dark',w,'dark theme',true);
+  else if(t.includes('light'))set('th','light',w,'light theme',true);
+  else if(t.includes('contrast'))set('th','hc',w,'high-contrast theme',true);
+  else if(t.includes('calm'))set('calm',1,w,'calm mode on',true);
+ };
+ r.start();
+};
+
+/* ---------- tabs ---------- */
+const tabs=$$('[role=tab]');
+function sel(i){tabs.forEach((t,j)=>{t.setAttribute('aria-selected',i===j);t.tabIndex=i===j?0:-1;$('#'+t.getAttribute('aria-controls')).hidden=i!==j})}
+tabs.forEach((t,i)=>{t.onclick=()=>sel(i);t.onkeydown=e=>{
+ const k={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1}[e.key];
+ const n=k?(i+k+tabs.length)%tabs.length:e.key==='Home'?0:e.key==='End'?tabs.length-1:null;
+ if(n!==null){e.preventDefault();tabs[n].focus();sel(n)}}});
+sel(0);
+
+/* ---------- before and after experiment ---------- */
+let run=null,results=[];
+const ver=()=>$('input[name=ver]:checked').value;
+function renderForm(){
+ const v=ver();run={v,t0:0,tabs:0,miss:0,err:0};
+ $('#exform').innerHTML=v==='A'
+  ?`<div id="fa"><input placeholder="Name"><input placeholder="Email"><input placeholder="dd/mm/yyyy"><div class="xbtn" id="xs">go</div></div>`
+  :`<form id="fb" novalidate><label for="n">Full name</label><input id="n" autocomplete="name"><span class="err" id="en"></span>
+    <label for="e">Email address</label><input id="e" type="email" autocomplete="email"><span class="err" id="ee"></span>
+    <label for="d">Date</label><input id="d" type="date"><span class="err" id="ed"></span>
+    <p><button class="p" type="submit">Send</button></p></form>`;
+ if(v==='A')$('#xs').onclick=submit;else $('#fb').onsubmit=e=>{e.preventDefault();submit()};
+}
+$$('input[name=ver]').forEach(r=>r.onchange=renderForm);
+const touch=()=>{if(run&&!run.t0)run.t0=performance.now()};
+$('#exform').addEventListener('pointerdown',e=>{touch();if(!e.target.closest('input,button,label,.xbtn'))run.miss++});
+$('#exform').addEventListener('keydown',e=>{touch();if(e.key==='Tab')run.tabs++});
+$('#exform').addEventListener('focusin',touch);
+function fields(){return ver()==='A'?$$('#fa input'):[$('#n'),$('#e'),$('#d')]}
+function submit(){
+ const f=fields(),v=[f[0].value.trim(),f[1].value.trim(),f[2].value.trim()];
+ const bad=[!v[0],!/^\S+@\S+\.\S+$/.test(v[1]),!v[2]];
+ touch();
+ if(bad.some(Boolean)){
+  run.err++;
+  f.forEach((x,i)=>x.classList.toggle('bad',bad[i]));
+  if(ver()==='B'){['en','ee','ed'].forEach((id,i)=>$('#'+id).textContent=bad[i]?['Enter your name.','Enter an email like name@example.com.','Choose a date.'][i]:'');
+   $('#exstat').textContent='Form has errors. Fix the fields marked in red text.';(f.find((x,i)=>bad[i])).focus()}
+  return;
+ }
+ finish(true);
+}
+function finish(ok){
+ if(!run.t0)run.t0=performance.now();
+ results.push({version:run.v,input:$('#mode').textContent,seconds:+((performance.now()-run.t0)/1000).toFixed(1),tabs:run.tabs,missedClicks:run.miss,errors:run.err,finished:ok});
+ $('#exstat').textContent=ok?'Run saved. A new form is ready.':'Run saved as not finished. A new form is ready.';
+ showResults();renderForm();
+}
+$('#giveup').onclick=()=>finish(false);
+$('#exclr').onclick=()=>{results=[];showResults();$('#exstat').textContent='Results cleared.'};
+$('#exdl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(results,null,2)],{type:'application/json'}));a.download='results.json';a.click()};
+function showResults(){
+ $('#rb').innerHTML=results.map(r=>`<tr><td>${r.version}</td><td>${r.input}</td><td>${r.seconds}</td><td>${r.tabs}</td><td>${r.missedClicks}</td><td>${r.errors}</td><td>${r.finished?'Yes':'No'}</td></tr>`).join('');
+ const avg=v=>{const a=results.filter(r=>r.version===v&&r.finished);return a.length?a.reduce((s,r)=>s+r.seconds,0)/a.length:null};
+ const a=avg('A'),b=avg('B'),m=Math.max(a||0,b||0);
+ $('#bars').innerHTML=m?[['A',a],['B',b]].map(([k,x])=>x===null?`<div>Version ${k}: no finished runs</div>`:`<div class="bar" style="width:${Math.max(12,x/m*100)}%">Version ${k}: ${x.toFixed(1)} s</div>`).join(''):'No finished runs yet.';
+}
+renderForm();
+
+/* ---------- HTML auditor ---------- */
+const lum=c=>c.map(v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
+const ratio=(a,b)=>{const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const rgb=s=>(s.match(/\d+/g)||[]).slice(0,3).map(Number);
+let DOC=null,ISS=[];
+function audit(){
+ const d=DOC=new DOMParser().parseFromString('<body>'+$('#src').value,'text/html'),out=ISS=[];
+ const add=(w,m,e,fix)=>out.push({w,m,e,fix});
+ $$('img:not([alt])',d).forEach(e=>add('1.1.1','Image has no alt text',e,x=>x.setAttribute('alt','Describe this image')));
+ $$('input:not([type=hidden]):not([type=submit]),select,textarea',d).forEach(e=>{
+  if(!(e.getAttribute('aria-label')||e.getAttribute('aria-labelledby')||e.closest('label')||(e.id&&d.querySelector(`label[for="${e.id}"]`))))
+   add('3.3.2','Form field has no label',e,x=>x.setAttribute('aria-label',x.placeholder||x.name||'Field'))});
+ $$('button,a[href]',d).forEach(e=>{if(!e.textContent.trim()&&!e.getAttribute('aria-label'))add('4.1.2','Control has no accessible name',e,x=>x.setAttribute('aria-label','Describe action'))});
+ $$('[onclick]:not(button):not(a):not(input)',d).forEach(e=>{if(!e.hasAttribute('tabindex'))add('2.1.1','Clickable element cannot be reached by keyboard',e,x=>{x.setAttribute('role','button');x.setAttribute('tabindex','0');x.setAttribute('onkeydown',"if(event.key==='Enter'||event.key===' ')this.click()")})});
+ $$('[tabindex]',d).forEach(e=>{if(+e.getAttribute('tabindex')>0)add('2.4.3','Positive tabindex changes the natural focus order',e,x=>x.setAttribute('tabindex','0'))});
+ $$('[style]',d).forEach(e=>{const f=rgb(e.style.color),b=rgb(e.style.backgroundColor);
+  if(f.length===3&&b.length===3&&ratio(f,b)<4.5)add('1.4.3',`Text contrast is ${ratio(f,b).toFixed(2)}:1, needs 4.5:1`,e,x=>{x.style.color=ratio([0,0,0],b)>=ratio([255,255,255],b)?'#000':'#fff'})});
+ let last=0;$$('h1,h2,h3,h4,h5,h6',d).forEach(h=>{const n=+h.tagName[1];if(last&&n>last+1)add('1.3.1',`Heading jumps from h${last} to h${n}`,h);last=n});
+ const ids={};$$('[id]',d).forEach(e=>{if(ids[e.id])add('4.1.1',`Duplicate id "${e.id}"`,e);ids[e.id]=1});
+ $('#sum').textContent=out.length?`${out.length} issue${out.length>1?'s':''} found.`:'No issues found by these checks.';
+ const ul=$('#iss');ul.innerHTML='';
+ out.forEach((o,i)=>{
+  const li=document.createElement('li'),h=document.createElement('div');
+  h.innerHTML=`<b>WCAG ${o.w}:</b> `;h.append(o.m);li.append(h);
+  const b=document.createElement('pre');b.textContent='Before: '+o.e.outerHTML;li.append(b);
+  if(o.fix){const c=o.e.cloneNode(true);o.fix(c);const a=document.createElement('pre');a.textContent='After:  '+c.outerHTML;li.append(a);
+   const btn=document.createElement('button');btn.textContent='Apply this fix';btn.onclick=()=>{o.fix(o.e);$('#src').value=DOC.body.innerHTML;audit();$('#sum').textContent+=' Fix applied.'};li.append(btn)}
+  else{const p=document.createElement('p');p.className='mut';p.textContent='Needs a manual fix.';li.append(p)}
+  ul.append(li)});
+}
+$('#run').onclick=audit;
+$('#fixall').onclick=()=>{audit();ISS.forEach(o=>o.fix&&o.fix(o.e));$('#src').value=DOC.body.innerHTML;audit();$('#sum').textContent+=' All automatic fixes applied. Placeholder text such as "Describe this image" still needs your wording.'};
+
+/* ---------- cognitive support ---------- */
+function readability(){
+ const t=$('#txt').value.trim(),w=t.split(/\s+/).filter(Boolean),s=(t.split(/[.!?]+(\s|$)/).filter(x=>x&&x.trim()).length)||1;
+ const syl=w.reduce((a,x)=>a+Math.max(1,(x.toLowerCase().replace(/[^a-z]/g,'').replace(/e$/,'').match(/[aeiouy]+/g)||[]).length),0);
+ const f=206.835-1.015*w.length/s-84.6*syl/(w.length||1);
+ const long=t.split(/[.!?]+(\s|$)/).filter(x=>x&&x.trim().split(/\s+/).length>25).length;
+ $('#rres').textContent=`Reading ease ${f.toFixed(0)} (${f>=70?'easy':f>=50?'fair':'hard'}). Average sentence: ${(w.length/s).toFixed(1)} words. Sentences over 25 words: ${long}.`;
+ $('#prev').innerHTML='';t.split(/\n\s*\n/).forEach(p=>{const e=document.createElement('p');e.tabIndex=0;e.textContent=p;$('#prev').append(e)});
+}
+$('#rd').onclick=readability;readability();
+function tog(id,label,fn){const b=$(id);b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.textContent=label+': '+(on?'on':'off');fn(on)}}
+tog('#rl','Reading ruler',on=>{ruler=on;$('#ruler').hidden=!on});
+tog('#fmode','Focus mode',on=>$('#prev').classList.toggle('fm',on));
+tog('#sp','Wider spacing',on=>set('ls',on?0.06:0,'You switched wider spacing '+(on?'on':'off'),'letter spacing '+(on?'wider':'normal'),true));
+$('#ds').onclick=()=>{
+ const h=$('#src').value,c=(r)=>(h.match(r)||[]).length;
+ const f=[['autoplay media',c(/autoplay/gi),3],['marquee or blink tags',c(/<marquee|<blink/gi),3],['CSS animation',c(/animation|@keyframes/gi),2],['animated GIFs',c(/\.gif/gi),2],['video or audio',c(/<video|<audio/gi),1]];
+ const score=Math.min(10,f.reduce((s,x)=>s+x[1]*x[2],0));
+ $('#dres').textContent=`Distraction score ${score} of 10. `+(f.filter(x=>x[1]).map(x=>`${x[0]}: ${x[1]}`).join(', ')||'No moving or autoplaying content found.');
+};
+
+/* ---------- modality matrix ---------- */
+const rows=['Button','Link','Text field','Dropdown','Slider','Modal dialog','Drag and drop'],cols=['Mouse','Touch','Keyboard','Voice','Single switch'];
+const ST=['Untested','Pass','Partial','Fail'],SY=['-','✓','~','✗'],CL=['','pass','part','fail'];
+$('#mx').innerHTML=`<thead><tr><th scope="col">Component</th>${cols.map((c,i)=>`<th scope="col" id="mh${i}">${c}</th>`).join('')}</tr></thead><tbody>`+rows.map((r,i)=>`<tr><th scope="row">${r}</th>${cols.map((c,j)=>`<td><button data-s="0" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}: Untested">- Untested</button></td>`).join('')}</tr>`).join('')+'</tbody>';
+$$('#mx button').forEach(b=>b.onclick=()=>{
+ const s=(+b.dataset.s+1)%4;b.dataset.s=s;b.className=CL[s];b.textContent=SY[s]+' '+ST[s];
+ b.setAttribute('aria-label',`${rows[b.dataset.r]}, ${cols[b.dataset.c]}: ${ST[s]}`);summ()});
+function summ(){const n=k=>$$('#mx button').filter(b=>b.dataset.s==k).length;$('#mxs').textContent=`Pass ${n(1)}, partial ${n(2)}, fail ${n(3)}, untested ${n(0)}.`}
+function markMatrix(){cols.forEach((c,i)=>{const e=$('#mh'+i);if(e)e.textContent=c+(seen.has(c.toLowerCase())?' (seen)':'')})}
+summ();markMatrix();
+</script>
+</body>
+</html>
